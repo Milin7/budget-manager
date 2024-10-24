@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { DraftExpense, Expense, Value } from "../types";
+import type { DraftExpense, Value } from "../types";
 import { categories } from "../data/categories";
 import DatePicker from "react-date-picker";
 import "react-date-picker/dist/DatePicker.css";
