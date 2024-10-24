@@ -1,24 +1,24 @@
-import { useReducer, createContext, Dispatch, ReactNode } from "react"
+import { useReducer, createContext, Dispatch, ReactNode } from "react";
 import {
   budgetReducer,
   initialState,
   BudgetState,
   BudgetActions,
-} from "../reducers/budget-reducers"
+} from "../reducers/budget-reducers";
 
 type BudgetContextProps = {
-  state: BudgetState
-  dispatch: Dispatch<BudgetActions>
-}
+  state: BudgetState;
+  dispatch: Dispatch<BudgetActions>;
+};
 
 type BudgetProviderProps = {
-  children: ReactNode
-}
+  children: ReactNode;
+};
 
-export const BudgetContext = createContext<BudgetContextProps>(null!)
+export const BudgetContext = createContext<BudgetContextProps>(null!);
 
 export const BudgetProvider = ({ children }: BudgetProviderProps) => {
-  const [state, dispatch] = useReducer(budgetReducer, initialState)
+  const [state, dispatch] = useReducer(budgetReducer, initialState);
 
   return (
     <BudgetContext.Provider
@@ -29,5 +29,5 @@ export const BudgetProvider = ({ children }: BudgetProviderProps) => {
     >
       {children}
     </BudgetContext.Provider>
-  )
-}
+  );
+};
