@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useState } from "react"
+import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import type { DraftExpense, Value } from "../types"
 import { categories } from "../data/categories"
 import DatePicker from "react-date-picker"
@@ -15,7 +15,15 @@ export default function ExpenseForm() {
     date: new Date(),
   })
   const [error, setError] = useState("")
-  const { dispatch } = useBudget()
+  const { state, dispatch } = useBudget()
+  useEffect(() => {
+    if (state.editingId) {
+      const editingExpense = state.expenses.filter(
+        currentExpense => currentExpense.id === state.editingId
+      )[0]
+      setExpense(editingExpense)
+    }
+  }, [state.editingId])
 
   const handleChangeDate = (value: Value) => {
     setExpense({
@@ -43,8 +51,15 @@ export default function ExpenseForm() {
       setError("All fields are required")
       return
     }
-    //Add new expense
-    dispatch({ type: "add-expense", payload: { expense } })
+    //Add or update expense
+    if (state.editingId) {
+      dispatch({
+        type: "update-expense",
+        payload: { expense: { id: state.editingId, ...expense } },
+      })
+    } else {
+      dispatch({ type: "add-expense", payload: { expense } })
+    }
     //Reset state
     setExpense({
       amount: 0,
