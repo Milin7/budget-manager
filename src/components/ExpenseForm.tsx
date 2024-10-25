@@ -1,12 +1,12 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import type { DraftExpense, Value } from "../types";
-import { categories } from "../data/categories";
-import DatePicker from "react-date-picker";
-import "react-date-picker/dist/DatePicker.css";
-import "react-calendar/dist/Calendar.css";
-import ErrorMessage from "./ErrorMessage";
-import { useBudget } from "../hooks/useBudget";
-import { formatCurrency } from "../helpers";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react"
+import type { DraftExpense, Value } from "../types"
+import { categories } from "../data/categories"
+import DatePicker from "react-date-picker"
+import "react-date-picker/dist/DatePicker.css"
+import "react-calendar/dist/Calendar.css"
+import ErrorMessage from "./ErrorMessage"
+import { useBudget } from "../hooks/useBudget"
+import { formatCurrency } from "../helpers"
 
 export default function ExpenseForm() {
   const [expense, setExpense] = useState<DraftExpense>({
@@ -14,64 +14,65 @@ export default function ExpenseForm() {
     expenseConcept: "",
     category: "",
     date: new Date(),
-  });
-  const [error, setError] = useState("");
-  const [previousAmount, setPreviousAmount] = useState(0);
-  const { state, dispatch, remainingBudget } = useBudget();
+  })
+  const [error, setError] = useState("")
+  const [previousAmount, setPreviousAmount] = useState(0)
+  const { state, dispatch, remainingBudget } = useBudget()
   useEffect(() => {
     if (state.editingId) {
       const editingExpense = state.expenses.filter(
-        (currentExpense) => currentExpense.id === state.editingId
-      )[0];
-      setExpense(editingExpense);
-      setPreviousAmount(editingExpense.amount);
+        currentExpense => currentExpense.id === state.editingId
+      )[0]
+      setExpense(editingExpense)
+      setPreviousAmount(editingExpense.amount)
     }
-  }, [state.editingId]);
-  const exceededBudget = expense.amount - previousAmount;
+  }, [state.editingId])
 
   const handleChangeDate = (value: Value) => {
     setExpense({
       ...expense,
       date: value,
-    });
-  };
+    })
+  }
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    const isAmountField = ["amount"].includes(name);
+    const { name, value } = e.target
+    const isAmountField = ["amount"].includes(name)
     setExpense({
       ...expense,
       [name]: isAmountField ? +value : value,
-    });
-  };
+    })
+  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
 
     //validation
     if (Object.values(expense).includes("")) {
-      setError("All fields are required");
-      return;
+      setError("All fields are required")
+      return
     }
 
     //Validation for exceeded budget
+    const exceededBudget = expense.amount - (previousAmount + remainingBudget)
 
     if (expense.amount - previousAmount > remainingBudget) {
       setError(
-        `You have exceeded your budget by ${formatCurrency(exceededBudget)}`
-      );
-      return;
+        `You have exceeded your budget by ${formatCurrency(exceededBudget)} `
+      )
+      return
     }
+
     //Add or update expense
     if (state.editingId) {
       dispatch({
         type: "update-expense",
         payload: { expense: { id: state.editingId, ...expense } },
-      });
+      })
     } else {
-      dispatch({ type: "add-expense", payload: { expense } });
+      dispatch({ type: "add-expense", payload: { expense } })
     }
     //Reset state
     setExpense({
@@ -79,8 +80,8 @@ export default function ExpenseForm() {
       expenseConcept: "",
       category: "",
       date: new Date(),
-    });
-  };
+    })
+  }
 
   return (
     <>
@@ -135,7 +136,7 @@ export default function ExpenseForm() {
           >
             {" "}
             <option value=""> -- Select -- </option>{" "}
-            {categories.map((category) => (
+            {categories.map(category => (
               <option key={category.id} value={category.id}>
                 {category.name}
               </option>
@@ -160,5 +161,5 @@ export default function ExpenseForm() {
         />
       </form>
     </>
-  );
+  )
 }
